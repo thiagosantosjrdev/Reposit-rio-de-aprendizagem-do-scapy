@@ -1,17 +1,29 @@
-from scapy.all import Ether,IP,UDP,BOOTP,DHCP,RandMAC,RandInt,sendp
+# Esse código foi feito há muito tempo, portanto pode ter alguns maus hábitos.
+
+from scapy.all import (
+    Ether,
+    IP,
+    UDP,
+    BOOTP,
+    DHCP,
+    RandINT,
+    sendp
+    )
+
 
 class server_DHCP:
     def __init__(self, server_dhcp_ip='', client_mac='', client_xid=''):
         self.server_dhcp_ip = server_dhcp_ip if len(server_dhcp_ip) > 0 else None
         self.client_mac = client_mac if len(client_mac) > 0 else None
-        self.client_xid = int(client_xid) if len(client_xid) > 0 else None
+        self.client_xid = int(client_xid) if len(client_xid) > 0 else RandINT()
         if(self.server_dhcp == None):
             raise ValueError('[-] Não tem como simular sem o ip do servidor DHCP')
         if(self.client_mac == None):
             raise ValueError('[-] Não tem como simular sem o MAC do cliente')
         if(self.client_xid == None):
             raise ValueError('[-] Não tem como simular sem o XID do cliente')
-    def discover(self):
+
+    def discover(self) -> None:
         try:
             sendp(
                 Ether(src=self.client_mac, dst="ff:ff:ff:ff:ff:ff")/
@@ -28,9 +40,9 @@ class server_DHCP:
         except Exception as e:
             print("[+] Houve um erro ao tentar executar o código discover:",e)
         print("[+] Pacote discover enviado com sucesso.")
-    
-    def offer(self,subnet_mask='255.255.255.0',offered_ip=''):
-        if(len(offered_ip)<1):
+
+    def offer(self,subnet_mask='255.255.255.0',offered_ip='') -> None:
+        if len(offered_ip) < 1:
             raise ValueError("[+] Não tem como executar o código OFFER sem o IP oferecido.")
         else:
             sendp(
@@ -49,8 +61,8 @@ class server_DHCP:
                 ]),
                 verbose=0
             )
-    
-    def nak(self):
+
+    def nak(self) -> None:
         sendp(
             Ether(dst=self.client_mac)/
             IP(src="192.168.3.1",dst="255.255.255.255")/
@@ -63,8 +75,8 @@ class server_DHCP:
             verbose=0
         )
 
-    def decline(self, offered_ip=''):
-        if(len(offered_ip)<1):
+    def decline(self, offered_ip='') -> None:
+        if len(offered_ip) < 1:
             raise ValueError("[+] Não tem como executar o código OFFER sem o IP oferecido.")
         else:
             sendp(
@@ -81,8 +93,8 @@ class server_DHCP:
                 verbose=0
             )
 
-    def request(self, offered_ip=''):
-        if(len(offered_ip)<1):
+    def request(self, offered_ip='') -> None:
+        if len(offered_ip) < 1:
             raise ValueError("[+] Não tem como executar o código OFFER sem o IP oferecido.")
         else:
             sendp(
@@ -98,8 +110,8 @@ class server_DHCP:
                 ]),
                 verbose=0
             )
-    
-    def ack(self):
+
+    def ack(self) -> None:
         sendp(
             Ether(dst=self.client_mac)/
             IP(src="192.168.3.1",dst="255.255.255.255")/
@@ -114,4 +126,5 @@ class server_DHCP:
                 'end'
             ]),
             verbose=0
+
         )
